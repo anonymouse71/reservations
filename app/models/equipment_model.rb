@@ -43,10 +43,14 @@ class EquipmentModel < ActiveRecord::Base
 
   validates :name,
             :description,
+            :ordering,
             :category,     presence: true
   validates :name,         uniqueness: true
   validates :late_fee,     :replacement_fee,
             numericality: { greater_than_or_equal_to: 0 }
+  validates :ordering, numericality: { greater_than_or_equal_to: -1,
+                                       only_integer: true }
+
   validates :max_per_user,
             :max_checkout_length, numericality: { allow_nil: true, \
                                                   only_integer: true, \
