@@ -26,6 +26,7 @@ describe EquipmentModel, type: :model do
     it { is_expected.to validate_uniqueness_of(:name) }
     it { is_expected.to validate_presence_of(:description) }
     it { is_expected.to belong_to(:category) }
+    it { is_expected.to validate_presence_of(:ordering) }
     it 'requires an associated category' do
       model.category = nil
       expect(model.valid?).to be_falsey
@@ -94,6 +95,14 @@ describe EquipmentModel, type: :model do
     end
     describe 'replacement fee' do
       it_behaves_like 'string attribute', :replacement_fee
+    end
+    it 'requires an integer value for ordering' do
+      @model.ordering = 2.3
+      expect(@model.save).to be_falsey
+    end
+    it 'requires an ordering greater than or equal to -1' do
+      @model.ordering = -2
+      expect(@model.save).to be_falsey
     end
   end
 
