@@ -47,7 +47,9 @@ describe EquipmentModel, type: :model do
         model = mock_eq_model(attr => -1)
         expect(model.valid?).to be_falsey
       end
-      it 'is valid when nil' do
+    end
+    shared_examples 'allows nil' do |attr|
+      it do
         model = mock_eq_model(attr => nil)
         expect(model.valid?).to be_truthy
       end
@@ -67,18 +69,22 @@ describe EquipmentModel, type: :model do
     describe 'max_per_user' do
       it_behaves_like 'integer attribute', :max_per_user
       it_behaves_like 'does not allow 0', :max_per_user
+      it_behaves_like 'allows nil', :max_per_user
     end
     describe 'max_renewal_length' do
       it_behaves_like 'integer attribute', :max_renewal_length
       it_behaves_like 'allows 0', :max_renewal_length
+      it_behaves_like 'allows nil', :max_renewal_length
     end
     describe 'max_renewal_times' do
       it_behaves_like 'integer attribute', :max_renewal_times
       it_behaves_like 'allows 0', :max_renewal_times
+      it_behaves_like 'allows nil', :max_renewal_times
     end
     describe 'renewal_days_before_due' do
       it_behaves_like 'integer attribute', :renewal_days_before_due
       it_behaves_like 'allows 0', :renewal_days_before_due
+      it_behaves_like 'allows nil', :renewal_days_before_due
     end
     shared_examples 'string attribute' do |attr|
       it 'fails when less than 0' do
@@ -96,6 +102,11 @@ describe EquipmentModel, type: :model do
     describe 'replacement fee' do
       it_behaves_like 'string attribute', :replacement_fee
     end
+    describe 'ordering' do
+      it_behaves_like 'integer attribute', :ordering
+      it_behaves_like 'allows 0', :ordering
+    end
+=begin 
     it 'requires an integer value for ordering' do
       @model.ordering = 2.3
       expect(@model.save).to be_falsey
@@ -104,6 +115,7 @@ describe EquipmentModel, type: :model do
       @model.ordering = -2
       expect(@model.save).to be_falsey
     end
+=end
   end
 
   describe 'association validations' do

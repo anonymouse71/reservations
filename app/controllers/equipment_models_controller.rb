@@ -120,6 +120,8 @@ class EquipmentModelsController < ApplicationController
   end
 
   def up
+    OrderingHelper.new(@equipment_model).up
+=begin
     id = @equipment_model.category_id
     ord = @equipment_model.ordering
     unless ord == 1
@@ -130,11 +132,14 @@ class EquipmentModelsController < ApplicationController
       target.update_attribute('ordering', ord)
       target.save
     end
+=end
     verify_order
     redirect_to request.referer
   end
 
   def down
+    OrderingHelper.new(@equipment_model).down
+=begin
     id = @equipment_model.category_id
     ord = @equipment_model.ordering
     unless ord == count_cat(id)
@@ -146,11 +151,14 @@ class EquipmentModelsController < ApplicationController
       target.update_attribute('ordering', ord)
       target.save
     end
+=end
     verify_order
     redirect_to request.referer
   end
 
   def verify_order
+    OrderingHelper.new(@equipment_model).verify_order
+=begin
     id = @equipment_model.category_id
     ms = EquipmentModel.where(category_id: id, deleted_at: nil)
     ords = ms.map(&:ordering).sort
@@ -171,6 +179,7 @@ class EquipmentModelsController < ApplicationController
       model.update_attribute('ordering', missing.shift)
       model.save
     end
+=end
   end
 
   def deactivate
@@ -182,13 +191,17 @@ class EquipmentModelsController < ApplicationController
         r.archive(current_user, 'The equipment model was deactivated.')
          .save(validate: false)
       end
+      #OrderingHelper.new(@equipment_model).deactivate_order
+      #verify_order
+#=begin
       id = @equipment_model.category_id
       ms = EquipmentModel.where(category_id: id)
                          .where('ordering > ?', @equipment_model.ordering)
       ms.each do |m|
         m.update_attribute('ordering', m.ordering - 1)
       end
-      @equipment_model.update_attribute('ordering', -1).save
+      @equipment_model.update_attribute('ordering', -1)
+#=end
       super
     else
       flash[:error] = 'Oops, something went wrong.'
