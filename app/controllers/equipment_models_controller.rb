@@ -87,8 +87,9 @@ class EquipmentModelsController < ApplicationController
 
   def create
     @equipment_model = EquipmentModel.new(equipment_model_params)
-    id = equipment_model_params['category_id']
-    @equipment_model.ordering = count_cat(id) + 1
+    OrderingHelper.new(@equipment_model).assign_order
+    #id = equipment_model_params['category_id']
+    #@equipment_model.ordering = count_cat(id) + 1
     if @equipment_model.save
       flash[:notice] = 'Successfully created equipment model.'
       redirect_to @equipment_model
@@ -120,7 +121,7 @@ class EquipmentModelsController < ApplicationController
   end
 
   def up
-    OrderingHelper.new(@equipment_model).up
+    OrderingHelper.new(@equipment_model).up.verify_order
 =begin
     id = @equipment_model.category_id
     ord = @equipment_model.ordering
@@ -133,12 +134,12 @@ class EquipmentModelsController < ApplicationController
       target.save
     end
 =end
-    verify_order
+    #verify_order
     redirect_to request.referer
   end
 
   def down
-    OrderingHelper.new(@equipment_model).down
+    OrderingHelper.new(@equipment_model).down.verify_order
 =begin
     id = @equipment_model.category_id
     ord = @equipment_model.ordering
@@ -152,7 +153,7 @@ class EquipmentModelsController < ApplicationController
       target.save
     end
 =end
-    verify_order
+    #verify_order
     redirect_to request.referer
   end
 
@@ -191,9 +192,8 @@ class EquipmentModelsController < ApplicationController
         r.archive(current_user, 'The equipment model was deactivated.')
          .save(validate: false)
       end
-      #OrderingHelper.new(@equipment_model).deactivate_order
-      #verify_order
-#=begin
+      OrderingHelper.new(@equipment_model).deactivate_order.verify_order
+=begin
       id = @equipment_model.category_id
       ms = EquipmentModel.where(category_id: id)
                          .where('ordering > ?', @equipment_model.ordering)
@@ -201,7 +201,7 @@ class EquipmentModelsController < ApplicationController
         m.update_attribute('ordering', m.ordering - 1)
       end
       @equipment_model.update_attribute('ordering', -1)
-#=end
+=end
       super
     else
       flash[:error] = 'Oops, something went wrong.'
