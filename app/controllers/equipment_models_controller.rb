@@ -88,8 +88,6 @@ class EquipmentModelsController < ApplicationController
   def create
     @equipment_model = EquipmentModel.new(equipment_model_params)
     OrderingHelper.new(@equipment_model).assign_order
-    #id = equipment_model_params['category_id']
-    #@equipment_model.ordering = count_cat(id) + 1
     if @equipment_model.save
       flash[:notice] = 'Successfully created equipment model.'
       redirect_to @equipment_model
@@ -122,65 +120,16 @@ class EquipmentModelsController < ApplicationController
 
   def up
     OrderingHelper.new(@equipment_model).up.verify_order
-=begin
-    id = @equipment_model.category_id
-    ord = @equipment_model.ordering
-    unless ord == 1
-      target = EquipmentModel.where(category_id: id,
-                                    ordering: ord - 1,
-                                    deleted_at: nil).first
-      @equipment_model.update_attribute('ordering', ord - 1)
-      target.update_attribute('ordering', ord)
-      target.save
-    end
-=end
-    #verify_order
     redirect_to request.referer
   end
 
   def down
     OrderingHelper.new(@equipment_model).down.verify_order
-=begin
-    id = @equipment_model.category_id
-    ord = @equipment_model.ordering
-    unless ord == count_cat(id)
-      target = EquipmentModel.where(category_id: id,
-                                    ordering: ord + 1,
-                                    deleted_at: nil).first
-      @equipment_model.update_attribute('ordering', ord + 1)
-      @equipment_model.save
-      target.update_attribute('ordering', ord)
-      target.save
-    end
-=end
-    #verify_order
     redirect_to request.referer
   end
 
   def verify_order
     OrderingHelper.new(@equipment_model).verify_order
-=begin
-    id = @equipment_model.category_id
-    ms = EquipmentModel.where(category_id: id, deleted_at: nil)
-    ords = ms.map(&:ordering).sort
-    return unless ords != (1..ords.length).to_a
-    deleted = EquipmentModel.where(category_id: id)
-                            .where('deleted_at IS NOT NULL')
-    deleted.each do |d_model|
-      d_model.update_attribute('ordering', -1)
-      d_model.save
-    end
-    duplicates = ords.find_all { |e| ords.rindex(e) != ords.index(e) }
-    duplicates.uniq.each do |dup|
-      duplicates.delete_at(duplicates.index(dup))
-    end
-    missing = (1..ords.length).to_a - ords
-    duplicates.each do |dup|
-      model = EquipmentModel.where(category_id: id, ordering: dup).first
-      model.update_attribute('ordering', missing.shift)
-      model.save
-    end
-=end
   end
 
   def deactivate
@@ -193,15 +142,6 @@ class EquipmentModelsController < ApplicationController
          .save(validate: false)
       end
       OrderingHelper.new(@equipment_model).deactivate_order.verify_order
-=begin
-      id = @equipment_model.category_id
-      ms = EquipmentModel.where(category_id: id)
-                         .where('ordering > ?', @equipment_model.ordering)
-      ms.each do |m|
-        m.update_attribute('ordering', m.ordering - 1)
-      end
-      @equipment_model.update_attribute('ordering', -1)
-=end
       super
     else
       flash[:error] = 'Oops, something went wrong.'

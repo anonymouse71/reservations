@@ -106,16 +106,6 @@ describe EquipmentModel, type: :model do
       it_behaves_like 'integer attribute', :ordering
       it_behaves_like 'allows 0', :ordering
     end
-=begin 
-    it 'requires an integer value for ordering' do
-      @model.ordering = 2.3
-      expect(@model.save).to be_falsey
-    end
-    it 'requires an ordering greater than or equal to -1' do
-      @model.ordering = -2
-      expect(@model.save).to be_falsey
-    end
-=end
   end
 
   describe 'association validations' do
